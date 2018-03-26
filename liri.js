@@ -16,7 +16,7 @@ var spotify = new Spotify({
     id: keys.spotify.id,
     secret: keys.spotify.secret
 });
-var omdbApi = require('omdb-client')
+var request = require('request');
 var omdbKey = keys.omdb.id
 
 
@@ -24,10 +24,12 @@ var omdbKey = keys.omdb.id
 function twitter() {
 
     var params = { screen_name: 'ScoopKasperov', tweet_mode: 'extended' };
-    client.get('statuses/user_timeline', params, function (error, tweets, response) {
-        if (!error) {
+    client.get('statuses/user_timeline', params, function (err, tweets, response) {
+        if (err) {
+            return console.log('Error occurred: ' + err)
+        } else if (!err) {
             for (i = 0; i < tweets.length; i++)
-                console.log("Tweet #" + (parseInt(i)+1) + " : " + tweets[i].full_text, '\n' + "Tweet Date/Time: " + tweets[i].created_at)
+                console.log("Tweet #" + (parseInt(i) + 1) + " : " + tweets[i].full_text, '\n' + "Tweet Date/Time: " + tweets[i].created_at)
         }
     })
 }
@@ -55,28 +57,26 @@ function spotifyThis(x) {
 
 //OMDB Search function - note: I've defaulted to Gladiator since it is awesome and Mr. Nobody isn't
 function movieSearch(x) {
-    // var omdbApi = require('omdb-client')
-
     if (x === undefined) {
         movieTitle = 'Gladiator'
     } else {
         movieTitle = x
     }
 
-    var params = {
-        apiKey: omdbKey,
-        title: "" + movieTitle + ""
-    }
-   
-    omdbApi.get(params, function (err, data) {
-        console.log("Movie Title: " + data.Title)
-        console.log("Year: " + data.Year)
-        console.log("iMDB Rating: " + data.Ratings[0].Value)
-        console.log("Rotten Tomatoes Rating: " + data.Ratings[1].Value)
-        console.log("Language: " + data.Language)
-        console.log("Country: " + data.Country)
-        console.log("Plot: " + data.Plot)
-        console.log("Actors: " + data.Actors)
+    request('http://www.omdbapi.com/?apikey=' + omdbKey + '&t=' + movieTitle + '', function (err, response, body) {
+        if (err) {
+            return console.log('Error occurred: ' + err)
+        }
+
+        var obj = JSON.parse(body)
+        console.log("Title: " + obj.Title)
+        console.log("Year: " + obj.Year)
+        console.log("iMDB Rating: " + obj.Ratings[0].Source)
+        console.log("Rotten Tomatoes Rating: " + obj.Ratings[1].Source)
+        console.log("Country: " + obj.Country)
+        console.log("Language: " + obj.Language)
+        console.log("Plot: " + obj.Plot)
+        console.log("Actors: " + obj.Actors)
     });
 }
 
