@@ -23,11 +23,11 @@ var omdbKey = keys.omdb.id
 //twitter function
 function twitter() {
 
-    var params = { screen_name: 'ScoopKasperov' };
+    var params = { screen_name: 'ScoopKasperov', tweet_mode: 'extended' };
     client.get('statuses/user_timeline', params, function (error, tweets, response) {
         if (!error) {
             for (i = 0; i < tweets.length; i++)
-                console.log("Tweet #" + (parseInt(i)+1) + " : " + tweets[i].text, '\n' + "Tweet Date/Time: " + tweets[i].created_at)
+                console.log("Tweet #" + (parseInt(i)+1) + " : " + tweets[i].full_text, '\n' + "Tweet Date/Time: " + tweets[i].created_at)
         }
     })
 }
